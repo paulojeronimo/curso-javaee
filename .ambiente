@@ -4,7 +4,10 @@
 this_dir() { echo -n `cd $(dirname $(caller | cut -d " " -f 2)); pwd`; }
 
 # localização do Java
-export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_09
+# p/ o Oracle JDK
+#export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_09
+# p/ o OpenJDK
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386
 
 # localização deste curso (caminho completo)
 export CURSO_HOME=`this_dir`

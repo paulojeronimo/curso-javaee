@@ -4,5 +4,6 @@
 .gitkeep
 README.html
 *.swp
-instaladores/**/*
-repositorios/**/*
+instaladores/
+ferramentas/
+repositorios/

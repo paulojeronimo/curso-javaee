@@ -12,3 +12,9 @@ Repositórios de exemplos
 ------------------------
 
 - JBoss AS QuickStart: http://www.jboss.org/jdf/quickstarts/jboss-as-quickstart/
+
+
+Referências úteis
+-----------------
+
+- Está começando a usar o Git? Um guia simples (em várias línguas)... http://rogerdudler.github.com/git-guide/index.pt_BR.html

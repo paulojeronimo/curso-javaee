@@ -11,4 +11,4 @@ mkdir -p $REPOSITORIOS_DIR
 cd $REPOSITORIOS_DIR
 
 # extrai o Ant
-git clone git://github.com/jboss-jdf/jboss-as-quickstart.git --branch jdf-2.0.0.Final
+git clone https://github.com/jboss-jdf/jboss-as-quickstart.git --branch jdf-2.0.0.Final
