@@ -1,0 +1,20 @@
+#!/bin/bash
+
+bindir=`dirname $0`
+source $bindir/../.ambiente
+
+# faz o download
+mkdir -p $INSTALADORES_DIR
+$BAIXA_INSTALADORES && { wget --no-check-certificate -c $FORGE_INSTALADOR_URL -O $INSTALADORES_DIR/$FORGE_INSTALADOR || exit 1; }
+
+# remove a instalação anterior
+$bindir/remover-forge
+
+mkdir -p $FERRAMENTAS_DIR
+cd $FERRAMENTAS_DIR
+
+# extrai
+unzip $INSTALADORES_DIR/$FORGE_INSTALADOR
+
+# cria o link para o diretório de instalação
+ln -s $FORGE_DIR forge

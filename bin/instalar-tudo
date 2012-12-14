@@ -1,0 +1,10 @@
+#!/bin/bash
+
+bindir=`dirname $0`
+source $bindir/../.ambiente
+
+for i in $bindir/instalar-*; do
+  name=`basename $i`
+  [ "$name" = "`basename $0`" ] && continue
+  $i
+done

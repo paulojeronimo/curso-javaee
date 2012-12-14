@@ -1,0 +1,11 @@
+#!/bin/bash
+
+bindir=`dirname $0`
+source $bindir/../.ambiente
+
+# apaga o diretório das ferramentas e o cache dos instaladores
+echo Removendo os diretórios $FERRAMENTAS_DIR e $INSTALADORES_DIR ...
+rm -rf {$FERRAMENTAS_DIR,$INSTALADORES_DIR}
+
+# apaga alguns arquivos de log que vão aparecendo durante a execução de algumas aplicações
+find $bindir/.. -type f -name transaction.log -o -name twiddle.log -delete

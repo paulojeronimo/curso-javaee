@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# TODO!! A intenção é que este script possa fazer a instalação de pacotes necessários independente da distribuição ser Ubuntu, Fedora, ... ;)
+
+case `uname` in
+    Linux)
+        # TODO Verificar se estamos mesmo no Ubuntu...
+        echo 'Instalando pacotes p/ Linux Ubuntu ...'
+        sudo apt-get install \
+        vim \
+        vim-gnome \
+        tree \
+        git \
+        txt2tags \
+        openssh-server
+        ;;
+    Darwin)
+        # TODO
+        echo 'Instalação de pacotes p/ MacOS X não implementada!'
+        ;;
+esac

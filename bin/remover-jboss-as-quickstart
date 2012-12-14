@@ -1,0 +1,7 @@
+#!/bin/bash
+
+bindir=`dirname $0`
+source $bindir/../.ambiente
+
+# remove o repositório
+rm -rf $REPOSITORIOS_DIR/jboss-as-quickstart

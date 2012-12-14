@@ -1,0 +1,14 @@
+#!/bin/bash
+
+bindir=`dirname $0`
+source $bindir/../.ambiente
+
+# remove o repositório anterior
+$bindir/remover-jboss-as-quickstart
+
+# cria e muda o diretório corrente p/ o de repositórios
+mkdir -p $REPOSITORIOS_DIR
+cd $REPOSITORIOS_DIR
+
+# clona o projeto
+git clone https://github.com/jboss-jdf/jboss-as-quickstart.git --branch jdf-2.0.0.Final
