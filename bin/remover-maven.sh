@@ -1,6 +1,0 @@
-#!/bin/bash
-
-bindir=`dirname $0`
-source $bindir/../.ambiente
-
-cd $FERRAMENTAS_DIR && rm -rf maven* apache-maven*

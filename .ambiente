@@ -3,11 +3,21 @@
 # função que obtém a localização deste diretório quando o arquivo é carregado aravés do comando "source"
 this_dir() { echo -n `cd $(dirname $(caller | cut -d " " -f 2)); pwd`; }
 
-# localização do Java
-# p/ o Oracle JDK
-#export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_09
-# p/ o OpenJDK
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386
+# Se a variável JAVA_HOME não estiver definida, será utilizada a definição abaixo:
+if [ "x$JAVA_HOME" = "x" ]; then
+  case `uname` in
+    Darwin) 
+        export JAVA_HOME=`/usr/libexec/java_home`
+        ;;
+    Linux)
+        export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386
+        ;;
+    CYGWIN*)
+        #TODO Configurar isto!!
+        export JAVA_HOME="`cygpath --windows C:/Program Files/Java`"
+        ;;
+  esac
+fi
 
 # localização deste curso (caminho completo)
 export CURSO_HOME=`this_dir`
@@ -35,10 +45,6 @@ export REPOSITORIOS_DIR=$CURSO_HOME/repositorios
 # ajuste para "false" caso não necessário
 BAIXA_INSTALADORES=${BAIXA_INSTALADORES:-true}
 
-# Variáveis utilizadas p/ conexão via SSH com o servidor remoto (para testes com um cluster remoto)
-export USUARIO_REMOTO=${USUARIO_REMOTO:-aluno}
-export SERVIDOR_REMOTO=${SERVIDOR_REMOTO:-curso-ladoservidor}
-
 # localização e ajuste de PATH p/ o Ant
 ANT_DIR=apache-ant-1.8.4
 ANT_INSTALADOR=apache-ant-1.8.4-bin.tar.bz2
@@ -57,7 +63,16 @@ MAVEN_DIR=apache-maven-3.0.4
 export M2_HOME=$FERRAMENTAS_DIR/maven
 export PATH=$M2_HOME/bin:$PATH
 
+# localização e ajuste de PATH p/ o Forge
+FORGE_VER=1.1.2.Final
+FORGE_INSTALADOR=forge-distribution-$FORGE_VER.zip
+FORGE_INSTALADOR_URL=https://repository.jboss.org/nexus/service/local/repositories/releases/content/org/jboss/forge/forge-distribution/$FORGE_VER/$FORGE_INSTALADOR
+FORGE_DIR=forge-distribution-$FORGE_VER
+export FORGE_HOME=$FERRAMENTAS_DIR/forge
+export PATH=$FORGE_HOME/bin:$PATH
+
 # versão, localização e ajuste de PATH p/ o JBoss
+# se a versão do JBoss estiver configurada em outro lugar utiliza-a, caso contrário, usa a definida aqui:
 JBOSS_VER=${JBOSS_VER:-7}
 case $JBOSS_VER in
   6)
@@ -90,56 +105,9 @@ esac
 # vai p/ o home do curso
 alias curso='cd $CURSO_HOME'
 
-# aliases, variáveis e funções úteis p/ a execução de algumas tarefas com o JBoss
-# localização de logs
-LOG_default=/tmp/jboss.default.log
-LOG_n1=/tmp/jboss.n1.log
-LOG_n2=/tmp/jboss.n2.log
-
-# para iniciar o JBoss
-alias run.sh='nohup $JBOSS_HOME/bin/run.sh -b 0.0.0.0'
-alias run_default='run.sh &> $LOG_default &'
-alias run_n1='run.sh -c n1 -Djboss.service.binding.set=ports-01 -Djboss.messaging.ServerPeerID=1 &> $LOG_n1 &'
-alias run_n2='run.sh -c n2 -Djboss.service.binding.set=ports-02 -Djboss.messaging.ServerPeerID=2 &> $LOG_n2 &'
-
-# para ver os logs
-alias log_default='tail -f $LOG_default'
-alias log_n1='tail -f $LOG_n1'
-alias log_n2='tail -f $LOG_n2'
-
-# para parar o JBoss
-alias stop_default='shutdown.sh -S'
-case $JBOSS_VER in
-  5)
-    alias stop_n1='shutdown.sh -S -s jnp://localhost:1190'
-    alias stop_n2='shutdown.sh -S -s jnp://localhost:1290'
-    ;;
-  6)
-    alias stop_n1='shutdown.sh -S --port 1190'
-    alias stop_n2='shutdown.sh -S --port 1290'
-    ;;
-esac
-
-# função que mostra os arquivos + atuais de um determinado diretório de uma instância JBoss
-_ls_jboss() {
-  local dir=${1:-deploy}
-  local server=${2:-default}
-  local n=${3:-7}
-  ls -lht $JBOSS_HOME/server/$server/$dir | head -n $n
-}
-
-# função para ver o conteúdo do diretório deploy de uma instância
-ls_deploy() {
-  _ls_jboss deploy $@
-}
-
-# função para ver o conteúdo do diretório lib de uma instância
-ls_lib() {
-  _ls_jboss lib $@
-}
-
-# função que insere o código de carregamento automático do ambiente deste curso
-instalar_ambiente() {
+# função que insere o código de carregamento automático deste ambiente
+# no arquivo de inicialização do shell
+instalar() {
   local profile
 
   case `uname` in
@@ -150,7 +118,7 @@ instalar_ambiente() {
 	grep '^# carrrega.*curso$' $profile &> /dev/null && return 0
   cat >> $profile <<EOF
 
-# carrega o ambiente do curso
+# carrega o ambiente
 f=~/$CURSO_DIR/.ambiente; [ -f \$f ] && source \$f; unset f
 EOF
 }
@@ -158,18 +126,19 @@ EOF
 # função para recuperar um diretório de instaladores salvo, caso ele exista e não haja um diretório instaladores existente
 recuperar_instaladores() {
   local instaladores=`basename $INSTALADORES_DIR`
-  local bkp_instaladores=$CURSO_HOME.$instaladores
+  local bkp_instaladores="$CURSO_HOME.instaladores"
 
-  cd $CURSO_HOME
+  pushd $CURSO_HOME &> /dev/null
   if [ -d $bkp_instaladores -a ! -d $instaladores ]; then
     mkdir $instaladores
-    cd $instaladores
+    pushd $instaladores &> /dev/null
     local f
     for f in $bkp_instaladores/*; do
       ln -s $f
     done
+    popd &> /dev/null
   fi
-  cd - &> /dev/null
+  popd &> /dev/null
 }
 
 # chamando esta função neste ponto, vamos recuperar o diretório instaladores ao carregar este arquivo!
