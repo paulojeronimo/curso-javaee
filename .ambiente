@@ -64,7 +64,7 @@ export M2_HOME=$FERRAMENTAS_DIR/maven
 export PATH=$M2_HOME/bin:$PATH
 
 # localização e ajuste de PATH p/ o Forge
-FORGE_VER=1.1.2.Final
+FORGE_VER=1.1.3.Final
 FORGE_INSTALADOR=forge-distribution-$FORGE_VER.zip
 FORGE_INSTALADOR_URL=https://repository.jboss.org/nexus/service/local/repositories/releases/content/org/jboss/forge/forge-distribution/$FORGE_VER/$FORGE_INSTALADOR
 FORGE_DIR=forge-distribution-$FORGE_VER
@@ -139,6 +139,21 @@ recuperar_instaladores() {
     popd &> /dev/null
   fi
   popd &> /dev/null
+}
+
+# função para salvar os instaladores que estiverem no cache e não estiverem no diretório de instaladores salvos
+salvar_instaladores() {
+  local instaladores=`basename $INSTALADORES_DIR`
+  local bkp_instaladores="$CURSO_HOME.instaladores"
+
+  if [ -d $instaladores ]; then
+    pushd $instaladores &> /dev/null
+    local f
+    for f in `find . -type f`; do
+      cp -f $f $bkp_instaladores
+    done
+    popd &> /dev/null
+  fi
 }
 
 # chamando esta função neste ponto, vamos recuperar o diretório instaladores ao carregar este arquivo!
